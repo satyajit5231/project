@@ -1,26 +1,35 @@
-// Generate a random number between min and max
-function generateRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-// Check if the user's guess is correct, too high, or too low
-function checkGuess() {
-    const guess = parseInt(document.getElementById('guessInput').value);
-    if (guess === randomNumber) {
-        setMessage(`Congratulations! You guessed the correct number (${randomNumber}).`, 'green');
-    } else if (guess < randomNumber) {
-        setMessage('Too low! Try a higher number.', 'red');
-    } else {
-        setMessage('Too high! Try a lower number.', 'red');
+class Token {
+    constructor(name, symbol, totalSupply) {
+      this.name = name;
+      this.symbol = symbol;
+      this.totalSupply = totalSupply;
+      this.balances = {}; // Mapping of addresses to balances
     }
-}
-
-// Set message to display feedback to the user
-function setMessage(message, color) {
-    const messageElement = document.getElementById('message');
-    messageElement.style.color = color;
-    messageElement.textContent = message;
-}
-
-// Generate random number between 1 and 100
-const randomNumber = generateRandomNumber(1, 100);
+    mint(address, value) {
+      if (!this.balances[address]) {
+        this.balances[address] = 0;
+      }
+      this.balances[address] += value;
+      this.totalSupply += value;
+    }
+    burn(address, value) {
+      if (this.balances[address] < value) {
+        throw new Error("Insufficient balance");
+      }
+      this.balances[address] -= value;
+      this.totalSupply -= value;
+    }
+    getBalance(address) {
+      return this.balances[address] || 0;
+    }
+  }
+  const myToken = new Token("MyCoin", "MYC", 10000);
+  myToken.mint("address1", 100);
+  console.log(myToken.getBalance("address1")); 
+  try {
+    myToken.burn("address1", 150);
+  } catch (error) {
+    console.error(error.message); 
+  }
+  myToken.burn("address1", 50);
+  console.log(myToken.getBalance("address1"));
